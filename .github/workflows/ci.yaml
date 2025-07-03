@@ -1,0 +1,34 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout repo
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # Install dependencies  
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Lint with flake8
+        run: flake8 src/ tests/
+
+      # # Run tests with pytest
+      # - name: Run unit tests with pytest
+      #   run: |
+      #     pytest -v
+          
+      # - name: Run tests with coverage
+      #   run: |
+      #     pip install coverage
+      #     coverage run -m pytest
+      #     coverage report

@@ -23,9 +23,14 @@ KAIM-WEEK-6/
 ├── src/
 │ └── utils/ # Utility functions
 │  │ └── data_loader.py # loads csv files
+│ └── vectorize_cimplaints.py # chunking and vectorization
+│ └── README.md # Documentation for src
 ├── tests/
 │ └── __init__.py # 
+│ └── test_vectorization.py # test compaint vectorization and store creation
 │ └── README.md # Testing documentation
+├── vector_store/
+│ └── chroma.sqlite3
 ├── .gitattributes
 ├── .gitignore
 ├── README.md # Main project documentation
@@ -47,6 +52,10 @@ KAIM-WEEK-6/
 ### ✅ Task 1: Exploratory Data Analysis and Data Preprocessing 
 
 Loaded the CFPB complaint dataset and conducted initial EDA. Analyzed complaint volume by product and narrative length distribution. Filtered data to include five target products and non-empty narratives. Cleaned text by lowercasing, removing special characters, and stripping boilerplate to prepare for embedding.
+
+### Task 2: Text Chunking, Embedding, and Vector Store Indexing 
+
+Divided lengthy consumer complaint narratives into manageable text chunks to optimize embedding quality. Generated embeddings for each chunk using a SentenceTransformer model. Created a persistent ChromaDB vector store, ensuring previous collections are deleted to maintain consistency. Verified data integrity by testing chunking output, embedding shapes, and vector store indexing and querying functionality.
 
 ---
 

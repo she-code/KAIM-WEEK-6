@@ -179,12 +179,20 @@ def create_chroma_index(chunks, embeddings, metadata):
     """Create and persist ChromaDB vector store"""
     client = chromadb.PersistentClient(path=VECTOR_STORE_DIR)
     
+    # Delete existing collection if it exists
+    try:
+        client.delete_collection("complaints")
+        print("Deleted existing collection")
+    except ValueError:
+        pass  # Collection didn't exist
+    
     # Use SentenceTransformer embedding function
     embedding_function = SentenceTransformerEmbeddingFunction(
         model_name="all-MiniLM-L6-v2"
     )
     
-    collection = client.get_or_create_collection(
+    # Create new collection
+    collection = client.create_collection(
         name="complaints",
         embedding_function=embedding_function,
         metadata={"hnsw:space": "cosine"}

@@ -23,9 +23,3 @@ jobs:
       - name: Run unit tests with pytest
         run: |
           pytest -v
-          
-      - name: Run tests with coverage
-        run: |
-          pip install coverage
-          coverage run -m pytest --continue-on-collection-errors
-          coverage report

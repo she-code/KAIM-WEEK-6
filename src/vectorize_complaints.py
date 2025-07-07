@@ -56,39 +56,43 @@ def process_complaints(df, text_splitter, embedding_model):
     
     return chunks, np.array(embeddings), metadata
 
-    
-def create_chroma_index(chunks, embeddings, metadata):
-    """Create and persist ChromaDB vector store"""
+def create_chroma_index(chunks, embeddings, metadata, batch_size=5000):
+    """Create and persist ChromaDB vector store in batches"""
     client = chromadb.PersistentClient(path=VECTOR_STORE_DIR)
-    
+
     # Delete existing collection if it exists
     try:
         client.delete_collection("complaints")
         print("Deleted existing collection")
     except NotFoundError:
-        pass  # Collection didn't exist
-    
-    # Use SentenceTransformer embedding function
+        pass
+
     embedding_function = SentenceTransformerEmbeddingFunction(
         model_name="all-MiniLM-L6-v2"
     )
-    
-    # Create new collection
+
     collection = client.create_collection(
         name="complaints",
         embedding_function=embedding_function,
         metadata={"hnsw:space": "cosine"}
     )
-    
-    # Add documents
-    collection.add(
-        documents=chunks,
-        embeddings=embeddings,
-        metadatas=metadata,
-        ids=[str(i) for i in range(len(chunks))]
-    )
+
+    # Batch insert to avoid exceeding Chroma's limits
+    for i in tqdm(range(0, len(chunks), batch_size), desc="Adding to vector store"):
+        batch_chunks = chunks[i:i+batch_size]
+        batch_embeddings = embeddings[i:i+batch_size]
+        batch_metadata = metadata[i:i+batch_size]
+        batch_ids = [str(j) for j in range(i, i + len(batch_chunks))]
+
+        collection.add(
+            documents=batch_chunks,
+            embeddings=batch_embeddings,
+            metadatas=batch_metadata,
+            ids=batch_ids
+        )
 
     return client
+ 
 
 def test_retrieval():
     """Test that the vector store was created correctly"""

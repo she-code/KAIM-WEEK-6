@@ -26,6 +26,7 @@ KAIM-WEEK-6/
 │ └── vectorize_cimplaints.py # chunking and vectorization
 │ └── inspect_chroma.py # checks if chroma db is created
 │ └── rag_pipeline.py # embedding and llm integration
+│ └── app.py # llm with streamlit
 │ └── README.md # Documentation for src
 ├── tests/
 │ └── __init__.py # 
@@ -63,6 +64,9 @@ Divided lengthy consumer complaint narratives into manageable text chunks to opt
 
 Loaded the persistent Chroma vector store containing chunked complaint embeddings. Initialized a HuggingFace embedding retriever and integrated it with a high-performance LLM (LLaMA3-70B via Groq). Constructed a Retrieval-Augmented Generation (RAG) chain by combining a context-aware system prompt, the retriever, and the LLM. Enabled the chain to answer domain-specific questions using only the indexed complaint excerpts. Evaluated pipeline quality by running representative queries, inspecting retrieved documents and response accuracy, and measuring retrieval and generation latency.
 
+### ✅ Task 4: Creating an Interactive Chat Interface 
+
+Developed a user-friendly web interface using Streamlit to make the RAG system accessible to non-technical users. Implemented a clean layout with a text input box, a "Submit" button for querying the system, and a display area for AI-generated answers. Integrated source document display beneath each response to enhance transparency and trust. Added a "Clear" button to reset the interface for new interactions. The interface runs via a standalone app.py script and provides an intuitive, explainable front end for exploring consumer complaint insights.
 ---
 
 ## ⚙️ Setup Instructions

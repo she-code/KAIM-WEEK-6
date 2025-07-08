@@ -41,3 +41,16 @@ Print intermediate retrieval results, metadata, and timing diagnostics for each 
 
 Enable quick validation of end-to-end RAG flow and model response quality
 
+## app.py
+
+Implemented interactive web UI with Streamlit for user-friendly query input
+
+Added text input, Ask/Clear buttons, and answer display with streaming
+
+Included source document display (top 2) with metadata for trust
+
+Integrated existing RAG pipeline with conversation history in session state
+
+Added timing info for retrieval and generation
+
+Ensured compatibility with Chroma vectorstore and Groq LLM

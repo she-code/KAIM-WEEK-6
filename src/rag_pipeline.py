@@ -1,75 +1,111 @@
 
-
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.csv_loader import CSVLoader
-from langchain_community.vectorstores import Chroma
-
+from langchain_chroma import Chroma  # Updated import
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
-
 from tqdm import tqdm
 import time
+from dotenv import load_dotenv
+from dotenv import dotenv_values
+import os
+config = dotenv_values(".env") 
 
-# Initialize components
-print("Initializing components...")
-start_time = time.time()
+load_dotenv() 
 
+# Initialize embedding model
 embedding_model = HuggingFaceEmbeddings(
     model_name='all-MiniLM-L6-v2',
     model_kwargs={'device': 'cpu'},
     encode_kwargs={
         'normalize_embeddings': True,
         'batch_size': 32
-    },
-    # cache_folder="../model_cache"
+    }
 )
 
+def get_vectorstore():
+    """Load the existing Chroma vectorstore from disk"""
+    vectorstore = Chroma(
+        persist_directory="../vector_store",
+        embedding_function=embedding_model
+    )
+    return vectorstore
 
-print(f"Components initialized in {time.time() - start_time:.2f} seconds")
-
-# Load documents
-print("\nLoading documents...")
-start_time = time.time()
-loader = CSVLoader(file_path="../data/processed/filtered_complaints.csv")
-documents = loader.load()
-print(f"Loaded {len(documents)} documents in {time.time() - start_time:.2f} seconds")
-
-# Split documents
-print("\nSplitting documents...")
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=800,
-    chunk_overlap=100,
-    length_function=len,
-    add_start_index=True
+vectorstore = get_vectorstore()
+retriever = vectorstore.as_retriever(
+    search_kwargs={
+        "k": 5,
+    }
 )
 
-splits = []
-with tqdm(total=len(documents), desc="Splitting documents") as pbar:
-    for doc in documents:
-        splits.extend(text_splitter.split_documents([doc]))
-        pbar.update(1)
+# Updated Groq model - choose one of these:
+llm = ChatGroq(
+    groq_api_key=os.getenv("GROK_API_KEY"),
+    # model_name="mixtral-8x7b-32768",  # Try this first
+   model_name="llama3-70b-8192",   # Alternative if the first doesn't work
+    temperature=0.1
+)
 
-print(f"Split into {len(splits)} chunks")
+# Rest of your code remains the same...
+system_template = """You are a financial analyst assistant for CrediTrust. 
+Answer questions using ONLY the provided complaint excerpts. 
+If the answer isn't in the context, state you don't have enough information.
 
-# Create vector store with progress tracking
-print("\nCreating vector store (this may take some time)...")
-start_time = time.time()
+Context: {context}
+Question: {question}
+Answer concisely:"""
+prompt = ChatPromptTemplate.from_messages([("system", system_template)])
 
-# Process in batches to show progress
-batch_size = 100  # Adjust based on your system's memory
-vectorstore = None
+def format_docs(docs):
+    return "\n\n".join(f"Complaint #{i+1}: {d.page_content}" for i, d in enumerate(docs))
 
-with tqdm(total=len(splits), desc="Generating embeddings") as pbar:
-    for i in range(0, len(splits), batch_size):
-        batch = splits[i:i + batch_size]
-        if vectorstore is None:
-            vectorstore = Chroma.from_documents(
-                documents=batch,
-                embedding=embedding_model,
-                persist_directory="../vector_store",
-                collection_metadata={"hnsw:space": "cosine"}
-            )
-        else:
-            vectorstore.add_documents(batch)
-        pbar.update(len(batch))
+# Create RAG chain
+rag_chain = (
+    {"context": retriever | format_docs, "question": RunnablePassthrough()}
+    | prompt
+    | llm
+)
 
-print(f"Vector store created in {time.time() - start_time:.2f} seconds")
+# Test questions
+test_questions = [
+    "What are customers saying about late fees?",
+    "Are there complaints about credit card charges?",
+    "What issues do customers report about online banking?",
+    "How are credit card disputes usually handled?",
+    "What are the most common issues with mortgage services?",
+    "How long does it typically take to resolve a complaint?",
+    "What kind of problems do customers have with student loans?",
+    "Are there recurring issues with credit reporting?",
+    "Do customers face problems after paying off loans?",
+    "What are common complaints about debt collectors?",
+    "How do customers describe auto loan issues?",
+    "What kinds of errors do people report in credit reports?",
+    "Are there complaints related to loan application denials?"
+]
+
+print("\nTesting the system...")
+for question in tqdm(test_questions, desc="Processing questions"):
+    print(f"\nQuestion: {question}")
+    start_time = time.time()
+    
+    print("  Retrieving relevant documents...")
+    ret_start = time.time()
+    relevant_docs = retriever.invoke(question)
+    print(f"  Retrieved {len(relevant_docs)} documents in {time.time() - ret_start:.2f}s")
+    # Display the retrieved documents
+    print("  Retrieved Documents:")
+    for i, doc in enumerate(relevant_docs[:2], 1):
+        print(f"  Document #{i}:")
+        print(f"  {doc.page_content}")
+        print(f"  Metadata: {doc.metadata}")
+        print("-" * 50)
+
+    print("  Generating answer...")
+    gen_start = time.time()
+    response = rag_chain.invoke(question)
+    print(f"  Generated answer in {time.time() - gen_start:.2f}s")
+    
+    print(f"Answer: {response.content}")
+    print(f"Total time for this question: {time.time() - start_time:.2f}s")

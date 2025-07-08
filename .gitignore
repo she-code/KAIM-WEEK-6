@@ -6,3 +6,4 @@ __pycache__
 chroma_db
 chroma_dbb
 model_cache
+vector_store2

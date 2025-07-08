@@ -93,7 +93,7 @@ with st.form(key="question_form"):
     question = st.text_input("Enter your question about customer complaints:", placeholder="e.g., What are customers saying about late fees?")
     col1, col2 = st.columns([1, 1])
     with col1:
-        submit_button = st.form_submit_button("Ask")
+        submit_button = st.form_submit_button("Submit")
     with col2:
         clear_button = st.form_submit_button("Clear")
 

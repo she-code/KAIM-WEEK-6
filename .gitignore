@@ -6,3 +6,4 @@ __pycache__
 model_cache
 vector_store2
 chroma_db
+.env

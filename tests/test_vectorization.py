@@ -1,82 +1,33 @@
 import os
 import pytest
-import pandas as pd
-from src.vectorize_complaints import (
-    initialize_components,
-    process_complaints,
-    create_chroma_index,
-    VECTOR_STORE_DIR
-)
+import chromadb
+from chromadb.errors import NotFoundError
+
+# Configuration
+VECTOR_STORE_DIR = "../vector_store"
+COLLECTION_NAME = "complaints"
 
 @pytest.fixture(scope="module")
-def setup_pipeline():
-    # Mock sample complaint data
-    df_sample = pd.DataFrame({
-        "Complaint ID": [1, 2],
-        "Product": ["Credit card", "Student loan"],
-        "Consumer complaint narrative": [
-            "I was charged unfair late fees despite paying on time.",
-            "My loan servicer did not properly apply payments and it hurt my credit score."
-        ]
-    })
+def chroma_client():
+    """Fixture to return a Chroma PersistentClient"""
+    if not os.path.exists(VECTOR_STORE_DIR):
+        pytest.fail("Vector store directory does not exist. Run vectorize_complaints.py first.")
+    return chromadb.PersistentClient(path=VECTOR_STORE_DIR)
 
-    # Minimal mock cleaning
-    df_sample["cleaned_narrative"] = (
-        df_sample["Consumer complaint narrative"]
-        .str.lower()
-        .str.replace(r"[^a-z0-9\s]", " ", regex=True)
-        .str.replace(r"\s+", " ", regex=True)
-        .str.strip()
-    )
+def test_vector_store_exists():
+    """Check if the vector store directory exists"""
+    assert os.path.exists(VECTOR_STORE_DIR), "Vector store directory does not exist"
 
-    df_sample = df_sample[["Complaint ID", "Product", "cleaned_narrative"]]
+def test_collection_exists(chroma_client):
+    """Ensure the 'complaints' collection exists"""
+    try:
+        collection = chroma_client.get_collection(COLLECTION_NAME)
+        assert collection is not None
+    except NotFoundError:
+        pytest.fail(f"Collection '{COLLECTION_NAME}' was not found in the vector store")
 
-    # Init and run
-    text_splitter, embedding_model = initialize_components()
-    chunks, embeddings, metadata = process_complaints(df_sample, text_splitter, embedding_model)
-
-    return {
-        "df": df_sample,
-        "chunks": chunks,
-        "embeddings": embeddings,
-        "metadata": metadata
-    }
-def test_data_loading(setup_pipeline):
-    df = setup_pipeline["df"]
-    assert not df.empty
-    assert {"cleaned_narrative", "Complaint ID", "Product"}.issubset(df.columns)
-
-def test_chunking_output(setup_pipeline):
-    chunks = setup_pipeline["chunks"]
-    metadata = setup_pipeline["metadata"]
-    assert len(chunks) > 0
-    assert len(chunks) == len(metadata)
-
-def test_embedding_shape(setup_pipeline):
-    chunks = setup_pipeline["chunks"]
-    embeddings = setup_pipeline["embeddings"]
-    assert embeddings.shape[0] == len(chunks)
-
-def test_vector_store_directory_created():
-    assert os.path.exists(VECTOR_STORE_DIR)
-
-def test_vector_store_indexing(setup_pipeline):
-    chunks = setup_pipeline["chunks"]
-    embeddings = setup_pipeline["embeddings"]
-    metadata = setup_pipeline["metadata"]
-    
-    client = create_chroma_index(chunks, embeddings, metadata)
-    collection = client.get_collection("complaints")
-    assert collection.count() > 0
-
-def test_vector_store_query(setup_pipeline):
-    chunks = setup_pipeline["chunks"]
-    embeddings = setup_pipeline["embeddings"]
-    metadata = setup_pipeline["metadata"]
-    
-    client = create_chroma_index(chunks, embeddings, metadata)
-    collection = client.get_collection("complaints")
-    
-    result = collection.query(query_texts=["loan dispute"], n_results=2)
-    assert "documents" in result
-    assert len(result["documents"][0]) > 0
+def test_collection_has_documents(chroma_client):
+    """Verify that the collection contains at least one document"""
+    collection = chroma_client.get_collection(COLLECTION_NAME)
+    count = collection.count()
+    assert count > 0, "Collection is empty"

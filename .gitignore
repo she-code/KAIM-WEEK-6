@@ -3,7 +3,8 @@ data
 vector_store
 __pycache__
 .pytest_cache
+chroma_db
+chroma_dbb
 model_cache
 vector_store2
-chroma_db
 .env

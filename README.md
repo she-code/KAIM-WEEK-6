@@ -63,6 +63,8 @@ Divided lengthy consumer complaint narratives into manageable text chunks to opt
 
 Loaded the persistent Chroma vector store containing chunked complaint embeddings. Initialized a HuggingFace embedding retriever and integrated it with a high-performance LLM (LLaMA3-70B via Groq). Constructed a Retrieval-Augmented Generation (RAG) chain by combining a context-aware system prompt, the retriever, and the LLM. Enabled the chain to answer domain-specific questions using only the indexed complaint excerpts. Evaluated pipeline quality by running representative queries, inspecting retrieved documents and response accuracy, and measuring retrieval and generation latency.
 
+🔗 Live App: [CrediTrust Complaint Assistant](https://crditrustcomplaintanalysis.streamlit.app/)
+
 ---
 
 ## ⚙️ Setup Instructions

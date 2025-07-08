@@ -24,6 +24,8 @@ KAIM-WEEK-6/
 │ └── utils/ # Utility functions
 │  │ └── data_loader.py # loads csv files
 │ └── vectorize_cimplaints.py # chunking and vectorization
+│ └── inspect_chroma.py # checks if chroma db is created
+│ └── rag_pipeline.py # embedding and llm integration
 │ └── README.md # Documentation for src
 ├── tests/
 │ └── __init__.py # 
@@ -56,6 +58,10 @@ Loaded the CFPB complaint dataset and conducted initial EDA. Analyzed complaint 
 ### ✅ Task 2: Text Chunking, Embedding, and Vector Store Indexing 
 
 Divided lengthy consumer complaint narratives into manageable text chunks to optimize embedding quality. Generated embeddings for each chunk using a SentenceTransformer model. Created a persistent ChromaDB vector store, ensuring previous collections are deleted to maintain consistency. Verified data integrity by testing chunking output, embedding shapes, and vector store indexing and querying functionality.
+
+### ✅ Task 3: Building the RAG Core Logic and Evaluation 
+
+Loaded the persistent Chroma vector store containing chunked complaint embeddings. Initialized a HuggingFace embedding retriever and integrated it with a high-performance LLM (LLaMA3-70B via Groq). Constructed a Retrieval-Augmented Generation (RAG) chain by combining a context-aware system prompt, the retriever, and the LLM. Enabled the chain to answer domain-specific questions using only the indexed complaint excerpts. Evaluated pipeline quality by running representative queries, inspecting retrieved documents and response accuracy, and measuring retrieval and generation latency.
 
 ---
 

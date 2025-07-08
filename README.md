@@ -26,6 +26,7 @@ KAIM-WEEK-6/
 │ └── vectorize_cimplaints.py # chunking and vectorization
 │ └── inspect_chroma.py # checks if chroma db is created
 │ └── rag_pipeline.py # embedding and llm integration
+│ └── app.py # llm with streamlit
 │ └── README.md # Documentation for src
 ├── tests/
 │ └── __init__.py # 

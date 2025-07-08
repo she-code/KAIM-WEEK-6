@@ -14,9 +14,8 @@ def chroma_client():
         pytest.fail("Vector store directory does not exist. Run vectorize_complaints.py first.")
     return chromadb.PersistentClient(path=VECTOR_STORE_DIR)
 
-def test_vector_store_exists():
-    """Check if the vector store directory exists"""
-    assert os.path.exists(VECTOR_STORE_DIR), "Vector store directory does not exist"
+def test_vector_store_directory_created():
+    assert os.path.exists(VECTOR_STORE_DIR)
 
 def test_collection_exists(chroma_client):
     """Ensure the 'complaints' collection exists"""

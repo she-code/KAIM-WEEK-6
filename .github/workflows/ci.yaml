@@ -19,6 +19,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Run Lint
+      - name: Run Black
+        run: black --check .
+
+      - name: Run isort
+        run: isort --check-only .
+
+      - name: Run Flake8
+        run: flake8 .
+
       # Run tests with pytest
       - name: Run unit tests with pytest
         run: |

@@ -71,6 +71,11 @@ Loaded the persistent Chroma vector store containing chunked complaint embedding
 
 Developed a user-friendly web interface using Streamlit to make the RAG system accessible to non-technical users. Implemented a clean layout with a text input box, a "Submit" button for querying the system, and a display area for AI-generated answers. Integrated source document display beneath each response to enhance transparency and trust. Added a "Clear" button to reset the interface for new interactions. The interface runs via a standalone app.py script and provides an intuitive, explainable front end for exploring consumer complaint insights.
 
+
+### ✅ Task 6: Implementing Code Quality and Linting
+
+Configured and enforced consistent Python coding standards across the project by integrating Black, Flake8, and isort. Set up rules for automatic formatting, import sorting, and style checking, while excluding irrelevant files such as virtual environments and Jupyter notebooks. Fixed existing linting issues, including line length violations and string concatenations, to ensure compliance. This setup improves code readability, maintainability, and reliability, providing a solid foundation for future development and CI/CD integration.
+
 🔗 Live App: [CrediTrust Complaint Assistant](https://crditrustcomplaintanalysis.streamlit.app/)
 
 ---

@@ -28,7 +28,7 @@ embedding_model = HuggingFaceEmbeddings(
 def get_vectorstore():
     """Load the existing Chroma vectorstore from disk"""
     vectorstore = Chroma(
-        persist_directory="../vector_store",
+        persist_directory="../../vector_store",
         embedding_function=embedding_model
     )
     return vectorstore

@@ -23,9 +23,12 @@ KAIM-WEEK-6/
 ├── src/
 │ └── utils/ # Utility functions
 │  │ └── data_loader.py # loads csv files
-│ └── vectorize_cimplaints.py # chunking and vectorization
-│ └── inspect_chroma.py # checks if chroma db is created
-│ └── rag_pipeline.py # embedding and llm integration
+│ └── vectorization/ # vectorizaton functions
+│  │ └──vectorize_cimplaints.py # chunking and vectorization
+│ └── db/ # db related functions
+│  │ └── inspect_chroma.py # checks if chroma db is created
+│ └── rag/ # RAG functions
+│  │ └── rag_pipeline.py # embedding and llm integration
 │ └── app.py # llm with streamlit
 │ └── README.md # Documentation for src
 ├── tests/

@@ -29,7 +29,7 @@ print(f"Components initialized in {time.time() - start_time:.2f} seconds")
 # Load documents
 print("\nLoading documents...")
 start_time = time.time()
-loader = CSVLoader(file_path="../data/processed/filtered_complaints.csv")
+loader = CSVLoader(file_path="../../data/processed/filtered_complaints.csv")
 documents = loader.load()
 print(f"Loaded {len(documents)} documents in {time.time() - start_time:.2f} seconds")
 
@@ -65,7 +65,7 @@ with tqdm(total=len(splits), desc="Generating embeddings") as pbar:
             vectorstore = Chroma.from_documents(
                 documents=batch,
                 embedding=embedding_model,
-                persist_directory="../vector_store",
+                persist_directory="../../vector_store",
                 collection_metadata={"hnsw:space": "cosine"}
             )
         else:

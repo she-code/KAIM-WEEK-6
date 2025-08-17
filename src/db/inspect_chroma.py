@@ -1,6 +1,6 @@
 import chromadb
 
-VECTOR_STORE_DIR = "../vector_store"
+VECTOR_STORE_DIR = "../../vector_store"
 
 def inspect_chroma():
     client = chromadb.PersistentClient(path=VECTOR_STORE_DIR)

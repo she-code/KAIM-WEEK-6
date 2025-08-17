@@ -71,6 +71,9 @@ Loaded the persistent Chroma vector store containing chunked complaint embedding
 
 Developed a user-friendly web interface using Streamlit to make the RAG system accessible to non-technical users. Implemented a clean layout with a text input box, a "Submit" button for querying the system, and a display area for AI-generated answers. Integrated source document display beneath each response to enhance transparency and trust. Added a "Clear" button to reset the interface for new interactions. The interface runs via a standalone app.py script and provides an intuitive, explainable front end for exploring consumer complaint insights.
 
+### ✅ Task 5: Adding Chat History and Modularizing Project Structure
+
+Enhanced the Streamlit chat interface by implementing persistent session-based chat history, allowing users to view and reference previous interactions within the same session. This ensures a smoother conversational experience and makes the system more user-friendly. Additionally, restructured the project into a modularized folder hierarchy, separating utilities, vectorization, database management, RAG pipeline logic, and the app interface into dedicated subfolders. This modularization improves code maintainability, readability, and scalability, making it easier to extend or update individual components without affecting the entire project.
 
 ### ✅ Task 6: Implementing Code Quality and Linting
 

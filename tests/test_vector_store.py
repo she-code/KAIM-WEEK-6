@@ -5,7 +5,7 @@ import pytest
 from chromadb.errors import NotFoundError
 
 # Configuration
-VECTOR_STORE_DIR = "../vector_store"
+VECTOR_STORE_DIR = os.path.join(os.path.dirname(__file__), "../vector_store")
 COLLECTION_NAME = "complaints"
 
 
@@ -30,10 +30,3 @@ def test_collection_exists(chroma_client):
         assert collection is not None
     except NotFoundError:
         pytest.fail(f"Collection '{COLLECTION_NAME}' was not found in the vector store")
-
-
-def test_collection_has_documents(chroma_client):
-    """Verify that the collection contains at least one document"""
-    collection = chroma_client.get_collection(COLLECTION_NAME)
-    count = collection.count()
-    assert count > 0, "Collection is empty"

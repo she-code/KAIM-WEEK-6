@@ -33,7 +33,7 @@ KAIM-WEEK-6/
 │ └── README.md # Documentation for src
 ├── tests/
 │ └── __init__.py # 
-│ └── test_vectorization.py # test compaint vectorization and store creation
+│ └── test_rag_piepline.py # test compaint vectorization and store creation
 │ └── README.md # Testing documentation
 ├── vector_store/
 │ └── chroma.sqlite3

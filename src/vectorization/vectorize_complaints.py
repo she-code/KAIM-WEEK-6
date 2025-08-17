@@ -1,13 +1,10 @@
-
+import time
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from langchain_community.vectorstores import Chroma
-
 from langchain_huggingface import HuggingFaceEmbeddings
-
 from tqdm import tqdm
-import time
 
 # Initialize components
 print("Initializing components...")
@@ -16,10 +13,7 @@ start_time = time.time()
 embedding_model = HuggingFaceEmbeddings(
     model_name='all-MiniLM-L6-v2',
     model_kwargs={'device': 'cpu'},
-    encode_kwargs={
-        'normalize_embeddings': True,
-        'batch_size': 32
-    },
+    encode_kwargs={'normalize_embeddings': True, 'batch_size': 32},
     # cache_folder="../model_cache"
 )
 
@@ -36,10 +30,7 @@ print(f"Loaded {len(documents)} documents in {time.time() - start_time:.2f} seco
 # Split documents
 print("\nSplitting documents...")
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=800,
-    chunk_overlap=100,
-    length_function=len,
-    add_start_index=True
+    chunk_size=800, chunk_overlap=100, length_function=len, add_start_index=True
 )
 
 splits = []
@@ -60,13 +51,13 @@ vectorstore = None
 
 with tqdm(total=len(splits), desc="Generating embeddings") as pbar:
     for i in range(0, len(splits), batch_size):
-        batch = splits[i:i + batch_size]
+        batch = splits[i : i + batch_size]
         if vectorstore is None:
             vectorstore = Chroma.from_documents(
                 documents=batch,
                 embedding=embedding_model,
                 persist_directory="../../vector_store",
-                collection_metadata={"hnsw:space": "cosine"}
+                collection_metadata={"hnsw:space": "cosine"},
             )
         else:
             vectorstore.add_documents(batch)
